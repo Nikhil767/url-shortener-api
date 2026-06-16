@@ -86,5 +86,6 @@ app.MapHealthChecks("/alive", new HealthCheckOptions
 });
 
 // Register endpoints
-app.MapUrlEndpoints();
+//app.MapUrlEndpoints();
+UrlEndpoints.MapUrlEndpoints(app);
 app.Run();

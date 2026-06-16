@@ -173,10 +173,11 @@ dotnet test
 
 ---
 
-## 🧪 Published URL
-```
-https://nikhilapi.runasp.net/alive
-```
+## Deployment Status
+
+The API is actively hosted and monitored. You can verify the live status of the deployment below:
+
+* **Health Check Endpoint:** [![API Status](https://img.shields.io/badge/API_Status-Live-brightgreen)](https://nikhilapi.runasp.net/alive)
 ##
 ---
 
