@@ -1,4 +1,5 @@
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using UrlShortener.API.Endpoints;
 using UrlShortener.Application.Services;
@@ -58,6 +59,8 @@ builder.WebHost.ConfigureKestrel(options =>
 	options.Limits.MaxRequestBodySize = maxRequestBodySize * 1024 * 1024;
 });
 
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
 
 // applies migrations
@@ -76,6 +79,14 @@ if (app.Environment.IsDevelopment())
 app.UseCors();
 
 app.UseRateLimiter();
+
+// MAP LIVENESS ENDPOINT (/alive)
+// Returns instantly with HTTP 200 "Healthy" if the app isn't deadlocked.
+app.MapHealthChecks("/alive", new HealthCheckOptions
+{
+	Predicate = check => check.Tags.Contains("live")
+});
+
 // Register endpoints
 app.MapUrlEndpoints();
 

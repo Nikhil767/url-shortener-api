@@ -7,6 +7,8 @@ This API converts long URLs into short codes, handles redirection, tracks usage,
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Status](https://img.shields.io/badge/status-live-success)
 ![Tech](https://img.shields.io/badge/.NET-10.0-purple)
+![CI - Dev](https://github.com/Nikhil767/url-shortener-api/actions/workflows/ci-dev.yml/badge.svg)
+![CD - Main](https://github.com/Nikhil767/url-shortener-api/actions/workflows/cd-main.yml/badge.svg)
 
 ---
 
