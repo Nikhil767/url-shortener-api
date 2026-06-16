@@ -48,7 +48,7 @@ jobs:
       - name: Wait for restart
         shell: pwsh
         run: |
-          Write-Host "Waiting 20 seconds for the app to restart..."
+          Write-Host "Waiting 20 seconds for the app to restart...!"
           Start-Sleep -Seconds 20
 
       - name: Health Check (Admin)
@@ -59,7 +59,7 @@ jobs:
             if ($response.StatusCode -ne 200) {
               throw "Unexpected status code: $($response.StatusCode)"
             }
-            Write-Host "Health check passed."
+            Write-Host "Health check passed.....!"
           }
           catch {
             throw "Health check failed: $($_.Exception.Message)"
