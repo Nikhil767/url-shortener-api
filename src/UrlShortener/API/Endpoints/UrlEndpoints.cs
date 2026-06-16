@@ -150,7 +150,6 @@ public class UrlEndpoints
                     title: "Validation Error",
                     statusCode: StatusCodes.Status400BadRequest);
             }
-
             var shortenedUrl = await repository.GetByCodeAsync(code, cancellationToken);
             if (shortenedUrl == null)
             {

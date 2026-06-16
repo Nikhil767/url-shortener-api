@@ -42,10 +42,12 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           # Ensure we have all branches from the remote
-          git fetch origin
+          # git fetch origin
+          git fetch origin --prune
 
           # Switch to the 'main' branch locally
-          git checkout main
+          # git checkout main
+          git checkout -B main origin/main
 
           # Merge dev into main without allowing fast-forward (force a real merge commit)
           git merge --no-ff origin/dev -m "CI: merge dev into main"
