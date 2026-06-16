@@ -35,20 +35,32 @@ jobs:
         run: dotnet publish ./src/UrlShortener/UrlShortener.csproj --configuration Release --output ./publish --runtime win-x86
 
       - name: Deploy to MonsterASP.NET via WebDeploy
-        uses: rasmusbuchholdt/simply-web-deploy@2.1.0   # Use MonsterASP's recommended WebDeploy action
+        uses: rasmusbuchholdt/simply-web-deploy@2.1.0
         with:
           website-name: ${{ secrets.WEBSITE_NAME }}
           server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
           server-username: ${{ secrets.SERVER_USERNAME }}
           server-password: ${{ secrets.SERVER_PASSWORD }}
+          additional-arguments: -enableRule:AppOffline
+          # If the action supports extra MSDeploy args, this can help with file locking.
+          # If MonsterASP/action does not accept this input, remove this line.
 
-      - name: Health Check (after deploy)
+      - name: Wait for restart
+        shell: pwsh
         run: |
-          echo "Waiting 10 seconds for app to restart..."
-          sleep 10
-          STATUS=$(curl -o /dev/null -s -w "%{http_code}" https://nikhilapi.runasp.net/Admin)
-          if [ "$STATUS" -ne 200 ]; then
-            echo "❌ Health check failed. Status code: $STATUS"
-            exit 1
-          fi
-          echo "✅ Health check passed. API is live."
+          Write-Host "Waiting 20 seconds for the app to restart..."
+          Start-Sleep -Seconds 20
+
+      - name: Health Check (Admin)
+        shell: pwsh
+        run: |
+          try {
+            $response = Invoke-WebRequest -Uri "https://nikhilapi.runasp.net/Admin" -UseBasicParsing
+            if ($response.StatusCode -ne 200) {
+              throw "Unexpected status code: $($response.StatusCode)"
+            }
+            Write-Host "Health check passed."
+          }
+          catch {
+            throw "Health check failed: $($_.Exception.Message)"
+          }
