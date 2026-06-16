@@ -117,7 +117,6 @@ public class UrlEndpoints
                 Code = code,
                 ShortUrl = $"{hostUrl}/{code}"
             };
-
             return Results.Ok(response);
         }
         catch (OperationCanceledException)

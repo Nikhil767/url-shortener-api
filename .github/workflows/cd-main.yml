@@ -5,6 +5,11 @@ on:
     branches:
       - main   # Trigger this workflow whenever code is pushed to the 'main' branch
 
+# This stops an old deployment immediately if a newer merge happens right after
+concurrency:
+  group: cd-main-${{ github.ref }}
+  cancel-in-progress: true      
+
 permissions:
   contents: read   # Limit this workflow to only read repository contents
 
@@ -42,10 +47,11 @@ jobs:
           server-username: ${{ secrets.SERVER_USERNAME }}
           server-password: ${{ secrets.SERVER_PASSWORD }}
           # Points the action directly to our compiled output folder
-          source-path: ./publish
-          additional-arguments: -enableRule:AppOffline
-          # If the action supports extra MSDeploy args, this can help with file locking.
-          # If MonsterASP/action does not accept this input, remove this line.
+          # source-path: ./publish
+          # Using the absolute workspace path ensures MSDeploy doesn't get confused by '.' relative paths
+          source-path: ${{ github.workspace }}\publish
+          # Strips old files to prevent WebDeploy from running into locked file errors
+          target-delete: true
 
       - name: Wait for restart
         shell: pwsh
