@@ -27,6 +27,10 @@ jobs:
       - name: Build   # Step name: build the project
         run: dotnet build ./src/UrlShortener/UrlShortener.csproj --configuration Release --no-restore   # Build the project in Release mode without re-restoring packages
 
+      # already running the test in ci-de.yml so skipping it here
+      #- name: Test   # Run tests before deploying
+      #  run: dotnet test ./tests/UrlShortener.Tests/UrlShortener.Tests.csproj --configuration Release --no-build  
+
       - name: Publish   # Step name: publish the project for deployment
         run: dotnet publish ./src/UrlShortener/UrlShortener.csproj --configuration Release --output ./publish   # Publish the project in Release mode and output compiled files to the './publish' folder
 
@@ -46,7 +50,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}   # FTP password from GitHub secrets
           port: ${{ secrets.FTP_PORT }}   # FTP port number from GitHub secrets (e.g., 21 for standard FTP)
           protocol: ftp   # Use FTP protocol (not FTPS or SFTP)
-          local-dir: ./publish   # Local directory containing the published files to upload
+          local-dir: ./publish/   # Local directory containing the published files to upload
           server-dir: /wwwroot   # Target directory on the FTP server where files will be uploaded
           dangerous-clean-slate: false   # Do not delete all files on the server before uploading (keeps existing files like web.config unless explicitly overwritten)
 
