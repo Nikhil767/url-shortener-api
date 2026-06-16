@@ -39,7 +39,7 @@ jobs:
         run: echo "Handled by FTP action include/exclude patterns if required"   # This is just an echo; actual web.config handling is done via FTP action options (include/exclude patterns)
 
       - name: Deploy via FTP to MonsterASP   # Step name: deploy the published files to MonsterASP using FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4   # Use the 'FTP-Deploy-Action' (v4) to upload files via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6   # Use the 'FTP-Deploy-Action' (v4) to upload files via FTP
         with:
           server: ${{ secrets.FTP_HOST }}   # FTP server hostname from GitHub secrets
           username: ${{ secrets.FTP_USERNAME }}   # FTP username from GitHub secrets
