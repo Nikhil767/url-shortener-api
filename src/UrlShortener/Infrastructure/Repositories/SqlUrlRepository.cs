@@ -36,7 +36,6 @@ namespace UrlShortener.Infrastructure.Repositories
 		{
 			var item = await _db.ShortenedUrls.FirstOrDefaultAsync(x => x.IsActive && x.ShortCode == code, cancellationToken);
 			if (item is null) return;
-
 			item.ClickCount++;
 			await _db.SaveChangesAsync(cancellationToken);
 		}
