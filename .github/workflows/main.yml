@@ -49,3 +49,14 @@ jobs:
           local-dir: ./publish   # Local directory containing the published files to upload
           server-dir: /wwwroot   # Target directory on the FTP server where files will be uploaded
           dangerous-clean-slate: false   # Do not delete all files on the server before uploading (keeps existing files like web.config unless explicitly overwritten)
+
+      - name: Health Check (after deploy)
+        run: |
+          echo "Waiting 10 seconds for app to restart..."
+          sleep 10
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" https://nikhilapi.runasp.net/Admin)
+          if [ "$STATUS" -ne 200 ]; then
+            echo "❌ Health check failed. Status code: $STATUS"
+            exit 1
+          fi
+          echo "✅ Health check passed. API is live."
