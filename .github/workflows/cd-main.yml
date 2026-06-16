@@ -49,7 +49,7 @@ jobs:
           # Points the action directly to our compiled output folder
           # source-path: ./publish
           # Using the absolute workspace path ensures MSDeploy doesn't get confused by '.' relative paths
-          source-path: ${{ github.workspace }}\publish
+          source-path: publish
           # Strips old files to prevent WebDeploy from running into locked file errors
           target-delete: true
 
