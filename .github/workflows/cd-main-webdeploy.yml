@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - main   # Trigger this workflow whenever code is pushed to the 'main' branch
+    # Only run the pipeline if changes happen in these specific locations:
+    paths:
+      - 'src/**'       # Triggers if any file inside the main app folder changes
+      - 'test/**' # Triggers if any file inside your test folder changes
+      - 'UrlShortener.slnx'     # Triggers if you add/remove projects from your solution
+      - 'Dockerfile'       # Triggers if you modify your Docker setup
 
 permissions:
   contents: read   # Limit this workflow to only read repository contents
