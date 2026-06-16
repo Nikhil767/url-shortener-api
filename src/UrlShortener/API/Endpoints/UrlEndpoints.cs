@@ -40,7 +40,6 @@ public class UrlEndpoints
             }
 
             var errors = new Dictionary<string, string[]>();
-
             if (string.IsNullOrWhiteSpace(request.Url))
             {
                 errors.Add(nameof(request.Url), new[] { "URL is required." });
@@ -58,7 +57,6 @@ public class UrlEndpoints
                     errors.Add(nameof(request.Url), new[] { "URL must be a well-formed absolute URL with HTTP or HTTPS scheme." });
                 }
             }
-
             if (errors.Count > 0)
             {
                 return Results.ValidationProblem(
@@ -80,7 +78,6 @@ public class UrlEndpoints
                     Code = existingUrl.ShortCode,
                     ShortUrl = $"{existingHostUrl}/{existingUrl.ShortCode}"
                 };
-
                 return Results.Ok(existingResponse);
             }
 
@@ -97,7 +94,6 @@ public class UrlEndpoints
                     break;
                 }
             }
-
             if (string.IsNullOrEmpty(code))
             {
                 return Results.Problem(
@@ -105,7 +101,6 @@ public class UrlEndpoints
                     statusCode: StatusCodes.Status500InternalServerError,
                     title: "Generation Failure");
             }
-
             var shortenedUrl = new ShortenedUrl
             {
                 OriginalUrl = request.Url!,
@@ -113,13 +108,10 @@ public class UrlEndpoints
                 CreatedAt = DateTime.UtcNow,
                 ClickCount = 0
             };
-
             await repository.AddAsync(shortenedUrl, cancellationToken);
-
             var hostUrl = !string.IsNullOrWhiteSpace(request.BaseUrl)
                 ? request.BaseUrl.TrimEnd('/')
                 : $"{httpContext.Request.Scheme}://{httpContext.Request.Host}";
-
             var response = new ShortenUrlResponse
             {
                 Code = code,
