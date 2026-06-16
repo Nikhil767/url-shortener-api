@@ -17,6 +17,7 @@ jobs:
         uses: actions/checkout@v4   # Use the official 'checkout' action (v4) to fetch the repo
         with:
           fetch-depth: 0   # full history for merge (fetches the entire commit history, needed for merging branches correctly)
+          token: ${{ secrets.GH_PAT }}
 
       - name: Setup .NET   # Step name: configure the .NET SDK
         uses: actions/setup-dotnet@v4   # Use the official 'setup-dotnet' action (v4)
@@ -52,7 +53,8 @@ jobs:
           # Merge dev into main without allowing fast-forward (force a real merge commit)
           git merge --no-ff origin/dev -m "CI: merge dev into main"
 
+          # Clean push using the inherited token from checkout
+          git push origin main
           # Push the updated 'main' branch back to the remote repository
-          # git push origin main
           # git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main
-          git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git main
+          # git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git main
