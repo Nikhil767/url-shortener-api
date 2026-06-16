@@ -1,0 +1,52 @@
+name: CI - Dev (build, test, auto-merge to main)
+
+on:
+  push:
+    branches:
+      - dev   # Trigger this workflow whenever code is pushed to the 'dev' branch
+
+permissions:
+  contents: write   # needed to push to main (allows the workflow to write to the repository, e.g., push merged changes)
+
+jobs:
+  build-test-and-merge:
+    runs-on: ubuntu-latest   # Run this job on the latest Ubuntu virtual environment provided by GitHub Actions
+
+    steps:
+      - name: Checkout dev   # Step name: checkout the repository code
+        uses: actions/checkout@v4   # Use the official 'checkout' action (v4) to fetch the repo
+        with:
+          fetch-depth: 0   # full history for merge (fetches the entire commit history, needed for merging branches correctly)
+
+      - name: Setup .NET   # Step name: configure the .NET SDK
+        uses: actions/setup-dotnet@v4   # Use the official 'setup-dotnet' action (v4)
+        with:
+          dotnet-version: '10.0.x'   # Install .NET SDK version 10.0.x (latest 10.0 release)
+
+      - name: Restore   # Step name: restore NuGet packages
+        run: dotnet restore ./src/UrlShortener/UrlShortener.csproj   # Restore all dependencies for the main UrlShortener project
+
+      - name: Build   # Step name: build the project
+        run: dotnet build ./src/UrlShortener/UrlShortener.csproj --configuration Release --no-restore   # Build the project in Release mode without re-restoring packages
+
+      - name: Test   # Step name: run tests
+        run: dotnet test ./tests/UrlShortener.Tests/UrlShortener.Tests.csproj --configuration Release --no-build   # Run tests for the test project in Release mode without rebuilding
+
+      - name: Merge dev into main and push   # Step name: merge dev into main and push the result
+        if: success()   # Only run this step if all previous steps succeeded
+        run: |
+          # Configure git user identity so commits/pushes have a valid author
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Ensure we have all branches from the remote
+          git fetch origin
+
+          # Switch to the 'main' branch locally
+          git checkout main
+
+          # Merge dev into main without allowing fast-forward (force a real merge commit)
+          git merge --no-ff origin/dev -m "CI: merge dev into main"
+
+          # Push the updated 'main' branch back to the remote repository
+          git push origin main
