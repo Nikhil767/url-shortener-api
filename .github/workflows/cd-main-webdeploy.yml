@@ -1,0 +1,54 @@
+name: CD - Main (deploy to MonsterASP via WebDeploy)
+
+on:
+  push:
+    branches:
+      - main   # Trigger this workflow whenever code is pushed to the 'main' branch
+
+permissions:
+  contents: read   # Limit this workflow to only read repository contents
+
+jobs:
+  build_and_deploy:
+    runs-on: windows-latest   # WebDeploy action requires Windows for .NET publish with win-x86
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore ./src/UrlShortener/UrlShortener.csproj
+
+      - name: Build
+        run: dotnet build ./src/UrlShortener/UrlShortener.csproj --configuration Release --no-restore
+
+      # already running the test in ci-de.yml so skipping it here
+      #- name: Test   # Run tests before deploying
+      #  run: dotnet test ./tests/UrlShortener.Tests/UrlShortener.Tests.csproj --configuration Release --no-build 
+      
+      - name: Publish
+        run: dotnet publish ./src/UrlShortener/UrlShortener.csproj --configuration Release --output ./publish --runtime win-x86
+
+      - name: Deploy to MonsterASP.NET via WebDeploy
+        uses: rasmusbuchholdt/simply-web-deploy@2.1.0   # Use MonsterASP's recommended WebDeploy action
+        with:
+          website-name: ${{ secrets.WEBSITE_NAME }}
+          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+          server-username: ${{ secrets.SERVER_USERNAME }}
+          server-password: ${{ secrets.SERVER_PASSWORD }}
+
+      - name: Health Check (after deploy)
+        run: |
+          echo "Waiting 10 seconds for app to restart..."
+          sleep 10
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" https://nikhilapi.runasp.net/Admin)
+          if [ "$STATUS" -ne 200 ]; then
+            echo "❌ Health check failed. Status code: $STATUS"
+            exit 1
+          fi
+          echo "✅ Health check passed. API is live."
