@@ -5,11 +5,11 @@ using UrlShortener.Domain.Entities;
 
 namespace UrlShortener.API.Endpoints;
 
-public static class UrlEndpoints
+public class UrlEndpoints
 {
     private const int MaxUrlLength = 2048;
 
-    public static void MapUrlEndpoints(this IEndpointRouteBuilder app)
+    public static void MapUrlEndpoints(IEndpointRouteBuilder app)
     {
         app.MapPost("/shorten", ShortenUrlAsync)
            .WithName("ShortenUrl");
@@ -26,7 +26,8 @@ public static class UrlEndpoints
         IShortCodeService codeService,
         IUrlRepository repository,
         HttpContext httpContext,
-        CancellationToken cancellationToken)
+		ILogger<UrlEndpoints> logger,
+		CancellationToken cancellationToken)
     {
         try
         {
@@ -133,8 +134,9 @@ public static class UrlEndpoints
         }
         catch (Exception ex)
         {
-            // Do not expose raw internal exception messages to clients
-            return Results.Problem(
+			logger.LogError(ex, "An unhandled exception occurred while executing {MethodName}", nameof(ShortenUrlAsync));
+			// Do not expose raw internal exception messages to clients
+			return Results.Problem(
                 detail: "An unexpected error occurred while processing your request.",
                 statusCode: StatusCodes.Status500InternalServerError,
                 title: "Internal Server Error");
@@ -144,7 +146,8 @@ public static class UrlEndpoints
     public static async Task<IResult> RedirectUrlAsync(
         string code,
         IUrlRepository repository,
-        CancellationToken cancellationToken)
+		ILogger<UrlEndpoints> logger,
+		CancellationToken cancellationToken)
     {
         try
         {
@@ -175,9 +178,10 @@ public static class UrlEndpoints
         {
             return Results.StatusCode(StatusCodes.Status499ClientClosedRequest);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return Results.Problem(
+			logger.LogError(ex, "An unhandled exception occurred while executing {MethodName}", nameof(RedirectUrlAsync));
+			return Results.Problem(
                 detail: "An unexpected error occurred while processing the redirect.",
                 statusCode: StatusCodes.Status500InternalServerError,
                 title: "Internal Server Error");
@@ -186,7 +190,8 @@ public static class UrlEndpoints
 
     public static async Task<IResult> GetAdminListAsync(
         IUrlRepository repository,
-        CancellationToken cancellationToken)
+        ILogger<UrlEndpoints> logger,
+		CancellationToken cancellationToken)
     {
         try
         {
@@ -199,7 +204,8 @@ public static class UrlEndpoints
         }
         catch (Exception ex)
         {
-            return Results.Problem(
+			logger.LogError(ex, "An unhandled exception occurred while executing {MethodName}", nameof(GetAdminListAsync));
+			return Results.Problem(
                 detail: "An unexpected error occurred while fetching details.",
                 statusCode: StatusCodes.Status500InternalServerError,
                 title: "Internal Server Error");

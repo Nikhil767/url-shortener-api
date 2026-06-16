@@ -1,6 +1,8 @@
+using Castle.Core.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using UrlShortener.API.Endpoints;
 using UrlShortener.ApplicationInterface;
@@ -13,7 +15,8 @@ public class UrlEndpointsTests
 {
     private readonly Mock<IShortCodeService> _mockCodeService = new();
     private readonly Mock<IUrlRepository> _mockRepository = new();
-    private readonly DefaultHttpContext _httpContext = new();
+	private readonly Mock<ILogger<UrlEndpoints>> _mockLogger = new();
+	private readonly DefaultHttpContext _httpContext = new();
     private readonly CancellationToken _cancellationToken = CancellationToken.None;
 
     public UrlEndpointsTests()
@@ -30,8 +33,8 @@ public class UrlEndpointsTests
             null!,
             _mockCodeService.Object,
             _mockRepository.Object,
-            _httpContext,
-            _cancellationToken);
+            _httpContext, _mockLogger.Object,
+			_cancellationToken);
 
         // Assert
         var problemResult = Assert.IsAssignableFrom<ProblemHttpResult>(result);
@@ -53,8 +56,8 @@ public class UrlEndpointsTests
             request,
             _mockCodeService.Object,
             _mockRepository.Object,
-            _httpContext,
-            _cancellationToken);
+            _httpContext, _mockLogger.Object,
+			_cancellationToken);
 
         // Assert
         var problemResult = Assert.IsAssignableFrom<ProblemHttpResult>(result);
@@ -75,8 +78,8 @@ public class UrlEndpointsTests
             request,
             _mockCodeService.Object,
             _mockRepository.Object,
-            _httpContext,
-            _cancellationToken);
+            _httpContext, _mockLogger.Object,
+			_cancellationToken);
 
         // Assert
         var problemResult = Assert.IsAssignableFrom<ProblemHttpResult>(result);
@@ -100,8 +103,8 @@ public class UrlEndpointsTests
             request,
             _mockCodeService.Object,
             _mockRepository.Object,
-            _httpContext,
-            _cancellationToken);
+            _httpContext, _mockLogger.Object,
+			_cancellationToken);
 
         // Assert
         var problemResult = Assert.IsAssignableFrom<ProblemHttpResult>(result);
@@ -126,8 +129,8 @@ public class UrlEndpointsTests
             request,
             _mockCodeService.Object,
             _mockRepository.Object,
-            _httpContext,
-            _cancellationToken);
+            _httpContext, _mockLogger.Object,
+			_cancellationToken);
 
         // Assert
         var okResult = Assert.IsAssignableFrom<Ok<ShortenUrlResponse>>(result);
@@ -152,8 +155,8 @@ public class UrlEndpointsTests
             request,
             _mockCodeService.Object,
             _mockRepository.Object,
-            _httpContext,
-            _cancellationToken);
+            _httpContext, _mockLogger.Object,
+			_cancellationToken);
 
         // Assert
         var okResult = Assert.IsAssignableFrom<Ok<ShortenUrlResponse>>(result);
@@ -193,8 +196,8 @@ public class UrlEndpointsTests
             request,
             _mockCodeService.Object,
             _mockRepository.Object,
-            _httpContext,
-            _cancellationToken);
+            _httpContext, _mockLogger.Object,
+			_cancellationToken);
 
         // Assert
         var okResult = Assert.IsAssignableFrom<Ok<ShortenUrlResponse>>(result);
@@ -211,7 +214,7 @@ public class UrlEndpointsTests
             .ReturnsAsync((ShortenedUrl?)null);
 
         // Act
-        var result = await UrlEndpoints.RedirectUrlAsync("missing", _mockRepository.Object, _cancellationToken);
+        var result = await UrlEndpoints.RedirectUrlAsync("missing", _mockRepository.Object, _mockLogger.Object, _cancellationToken);
 
         // Assert
         var notFoundResult = Assert.IsAssignableFrom<NotFound<ProblemDetails>>(result);
@@ -227,7 +230,7 @@ public class UrlEndpointsTests
             .ReturnsAsync(url);
 
         // Act
-        var result = await UrlEndpoints.RedirectUrlAsync("findme", _mockRepository.Object, _cancellationToken);
+        var result = await UrlEndpoints.RedirectUrlAsync("findme", _mockRepository.Object, _mockLogger.Object, _cancellationToken);
 
         // Assert
         var redirectResult = Assert.IsAssignableFrom<RedirectHttpResult>(result);
@@ -247,7 +250,7 @@ public class UrlEndpointsTests
         _mockRepository.Setup(r => r.GetAllAsync(_cancellationToken)).ReturnsAsync(list);
 
         // Act
-        var result = await UrlEndpoints.GetAdminListAsync(_mockRepository.Object, _cancellationToken);
+        var result = await UrlEndpoints.GetAdminListAsync(_mockRepository.Object, _mockLogger.Object, _cancellationToken);
 
         // Assert
         var okResult = Assert.IsAssignableFrom<Ok<IEnumerable<ShortenedUrl>>>(result);
