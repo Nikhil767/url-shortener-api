@@ -3,7 +3,8 @@ name: CD - Main (deploy to MonsterASP via FTP)
 on:
   push:
     branches:
-      - main   # Trigger this workflow whenever code is pushed to the 'main' branch
+    - '**'
+    #  - main   # Trigger this workflow whenever code is pushed to the 'main' branch
     # Only run the pipeline if changes happen in these specific locations:
     paths:
       - 'src/**'       # Triggers if any file inside the main app folder changes
