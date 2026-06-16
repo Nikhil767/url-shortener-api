@@ -34,6 +34,8 @@ jobs:
 
       - name: Merge dev into main and push   # Step name: merge dev into main and push the result
         if: success()   # Only run this step if all previous steps succeeded
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           # Configure git user identity so commits/pushes have a valid author
           git config user.name "github-actions[bot]"
@@ -49,4 +51,6 @@ jobs:
           git merge --no-ff origin/dev -m "CI: merge dev into main"
 
           # Push the updated 'main' branch back to the remote repository
-          git push origin main
+          # git push origin main
+          # git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main
+          git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git main
