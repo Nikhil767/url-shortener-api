@@ -42,6 +42,10 @@ jobs:
       - name: Preserve remote web.config (optional, if needed)   # Step name: note about preserving web.config
         run: echo "Handled by FTP action include/exclude patterns if required"   # This is just an echo; actual web.config handling is done via FTP action options (include/exclude patterns)
 
+      - name: Put site offline (app_offline.htm)
+        run: |
+          echo "<h1>Site is offline for maintenance</h1>" > ./publish/app_offline.htm
+      
       - name: Deploy via FTP to MonsterASP   # Step name: deploy the published files to MonsterASP using FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6   # Use the 'FTP-Deploy-Action' (v4) to upload files via FTP
         with:
@@ -53,6 +57,9 @@ jobs:
           local-dir: ./publish/   # Local directory containing the published files to upload
           server-dir: /wwwroot/   # Target directory on the FTP server where files will be uploaded
           dangerous-clean-slate: false   # Do not delete all files on the server before uploading (keeps existing files like web.config unless explicitly overwritten)
+          # Important: allow overwriting existing files
+          # (the action does this by default, but if you have issues, you can add:)
+          # directory-permissions: "rw"
 
       - name: Health Check (after deploy)
         run: |
