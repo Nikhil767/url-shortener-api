@@ -60,7 +60,6 @@ builder.WebHost.ConfigureKestrel(options =>
 });
 
 builder.Services.AddHealthChecks();
-
 var app = builder.Build();
 
 // applies migrations
@@ -77,7 +76,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseCors();
-
 app.UseRateLimiter();
 
 // MAP LIVENESS ENDPOINT (/alive)
@@ -89,5 +87,4 @@ app.MapHealthChecks("/alive", new HealthCheckOptions
 
 // Register endpoints
 app.MapUrlEndpoints();
-
 app.Run();

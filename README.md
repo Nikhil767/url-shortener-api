@@ -8,7 +8,7 @@ This API converts long URLs into short codes, handles redirection, tracks usage,
 ![Status](https://img.shields.io/badge/status-live-success)
 ![Tech](https://img.shields.io/badge/.NET-10.0-purple)
 ![CI - Dev](https://github.com/Nikhil767/url-shortener-api/actions/workflows/ci-dev.yml/badge.svg)
-![CD - Main](https://github.com/Nikhil767/url-shortener-api/actions/workflows/cd-main.yml/badge.svg)
+![CD - Main](https://github.com/Nikhil767/url-shortener-api/actions/workflows/cd-main-webdeploy.yml/badge.svg)
 
 ---
 
@@ -73,8 +73,12 @@ cd url-shortener-api/src/UrlShortener
 ### 2. Configure User Secrets
 ```bash
 dotnet user-secrets init
-//dotnet user-secrets set "ApiKey" "your-local-api-key"
+dotnet user-secrets set "ApiSecretKey" "your-local-api-key"
 dotnet user-secrets set "ConnectionStrings:DefaultConnection" "your-local-connection-string"
+dotnet user-secrets set "TokenLimit" "20"
+dotnet user-secrets set "TokensPerPeriod" "20"
+dotnet user-secrets set "RetryAfter": "60"
+dotnet user-secrets set "MaxRequestBodySize": "3"
 ```
 
 ### 3. Run the API
@@ -97,9 +101,12 @@ In MonsterASP Control Panel:
 
 | Key | Value |
 |-----|--------|
-| ApiKey | your-production-api-key |
+| ApiSecretKey | your-production-api-key |
 | ConnectionStrings__DefaultConnection | your SQL connection string |
-| RateLimit | 20 |
+| TokenLimit | 20 |
+| TokensPerPeriod | 20 |
+| RetryAfter | 60 |
+| MaxRequestBodySize | 3 MB |
 
 After saving → **Recycle Application Pool**.
 
@@ -164,6 +171,13 @@ cd tests/UrlShortener.Tests
 dotnet test
 ```
 
+---
+
+## 🧪 Published URL
+```
+https://nikhilapi.runasp.net/alive
+```
+##
 ---
 
 ## 📜 License
