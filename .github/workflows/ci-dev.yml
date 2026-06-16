@@ -5,6 +5,11 @@ on:
     branches:
       - dev   # Trigger this workflow whenever code is pushed to the 'dev' branch
 
+# This ensures only the absolute latest push to dev runs and auto-merges
+concurrency:
+  group: ci-dev-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: write   # needed to push to main (allows the workflow to write to the repository, e.g., push merged changes)
 
