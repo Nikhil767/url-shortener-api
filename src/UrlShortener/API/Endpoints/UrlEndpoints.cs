@@ -160,9 +160,7 @@ public class UrlEndpoints
                     Status = StatusCodes.Status404NotFound
                 });
             }
-
             await repository.IncrementClickCountAsync(code, cancellationToken);
-
             return Results.Redirect(shortenedUrl.OriginalUrl);
         }
         catch (OperationCanceledException)

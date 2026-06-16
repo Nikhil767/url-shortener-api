@@ -41,6 +41,8 @@ jobs:
           server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
           server-username: ${{ secrets.SERVER_USERNAME }}
           server-password: ${{ secrets.SERVER_PASSWORD }}
+          # Points the action directly to our compiled output folder
+          source-path: ./publish
           additional-arguments: -enableRule:AppOffline
           # If the action supports extra MSDeploy args, this can help with file locking.
           # If MonsterASP/action does not accept this input, remove this line.
@@ -56,10 +58,11 @@ jobs:
         run: |
           try {
             $response = Invoke-WebRequest -Uri "https://nikhilapi.runasp.net/Admin" -UseBasicParsing
-            if ($response.StatusCode -ne 200) {
+            if ($response.StatusCode -eq 200) {
+              Write-Host "Health check passed! App is alive. Hurray!"
+            } else {
               throw "Unexpected status code: $($response.StatusCode)"
             }
-            Write-Host "Health check passed.....Hurray!"
           }
           catch {
             throw "Health check failed: $($_.Exception.Message)"
