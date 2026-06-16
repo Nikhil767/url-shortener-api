@@ -1,9 +1,15 @@
-name: CD - Main (deploy to MonsterASP)
+name: CD - Main (deploy to MonsterASP via FTP)
 
 on:
   push:
     branches:
       - main   # Trigger this workflow whenever code is pushed to the 'main' branch
+    # Only run the pipeline if changes happen in these specific locations:
+    paths:
+      - 'src/**'       # Triggers if any file inside the main app folder changes
+      - 'test/**' # Triggers if any file inside your test folder changes
+      - 'UrlShortener.slnx'     # Triggers if you add/remove projects from your solution
+      - 'Dockerfile'       # Triggers if you modify your Docker setup
 
 permissions:
   contents: read   # Limit this workflow to only read repository contents (no write access needed for deployment)
@@ -56,7 +62,7 @@ jobs:
           protocol: ftp   # Use FTP protocol (not FTPS or SFTP)
           local-dir: ./publish/   # Local directory containing the published files to upload
           server-dir: /wwwroot/   # Target directory on the FTP server where files will be uploaded
-          dangerous-clean-slate: false   # Do not delete all files on the server before uploading (keeps existing files like web.config unless explicitly overwritten)
+          dangerous-clean-slate: true   # Do not delete all files on the server before uploading (keeps existing files like web.config unless explicitly overwritten)
           # Important: allow overwriting existing files
           # (the action does this by default, but if you have issues, you can add:)
           # directory-permissions: "rw"
