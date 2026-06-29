@@ -11,15 +11,22 @@ public class UrlEndpoints
 
     public static void MapUrlEndpoints(IEndpointRouteBuilder app)
     {
-        app.MapPost("/shorten", ShortenUrlAsync)
+		var api = app.MapGroup("/api");
+		api.MapPost("/shorten", ShortenUrlAsync)
            .WithName("ShortenUrl");
 
-        app.MapGet("/{code}", RedirectUrlAsync)
+		api.MapGet("/shorten/{code}", GetUrlDetailsAsync)
+		.WithName("UrlDetails");
+
+		api.MapGet("/{code}", RedirectUrlAsync)
            .WithName("RedirectUrl");
 
-        app.MapGet("/Admin", GetAdminListAsync)
+		api.MapGet("/Admin", GetAdminListAsync)
            .WithName("GetAdminList");
-    }
+
+		api.MapDelete("/MasterAdmin/{id}", DeleteUrlAsync)
+		   .WithName("DeleteUrl");
+	}
 
     public static async Task<IResult> ShortenUrlAsync(
         [FromBody] ShortenUrlRequest request,
@@ -75,7 +82,7 @@ public class UrlEndpoints
 
                 var existingResponse = new ShortenUrlResponse
                 {
-                    Code = existingUrl.ShortCode,
+                    ShortCode = existingUrl.ShortCode,
                     ShortUrl = $"{existingHostUrl}/{existingUrl.ShortCode}"
                 };
                 return Results.Ok(existingResponse);
@@ -114,7 +121,7 @@ public class UrlEndpoints
                 : $"{httpContext.Request.Scheme}://{httpContext.Request.Host}";
             var response = new ShortenUrlResponse
             {
-                Code = code,
+                ShortCode = code,
                 ShortUrl = $"{hostUrl}/{code}"
             };
             return Results.Ok(response);
@@ -194,6 +201,80 @@ public class UrlEndpoints
         {
 			logger.LogError(ex, "An unhandled exception occurred while executing {MethodName}", nameof(GetAdminListAsync));
 			return Results.Problem(
+                detail: "An unexpected error occurred while fetching details.",
+                statusCode: StatusCodes.Status500InternalServerError,
+                title: "Internal Server Error");
+        }
+    }
+
+	public static async Task<IResult> GetUrlDetailsAsync(
+	string code,
+	IUrlRepository repository,
+	ILogger<UrlEndpoints> logger,
+	CancellationToken cancellationToken)
+	{
+		try
+		{
+			if (string.IsNullOrWhiteSpace(code))
+			{
+				return Results.ValidationProblem(
+					new Dictionary<string, string[]> { { "code", new[] { "Code parameter is required." } } },
+					title: "Validation Error",
+					statusCode: StatusCodes.Status400BadRequest);
+			}
+			var shortenedUrl = await repository.GetByCodeAsync(code, cancellationToken);
+			if (shortenedUrl == null)
+			{
+				return Results.NotFound(new ProblemDetails
+				{
+					Title = "Not Found",
+					Detail = $"Short code '{code}' was not found.",
+					Status = StatusCodes.Status404NotFound
+				});
+			}
+			return Results.Ok(shortenedUrl);
+		}
+		catch (OperationCanceledException)
+		{
+			return Results.StatusCode(StatusCodes.Status499ClientClosedRequest);
+		}
+		catch (Exception ex)
+		{
+			logger.LogError(ex, "An unhandled exception occurred while executing {MethodName}", nameof(RedirectUrlAsync));
+			return Results.Problem(
+				detail: "An unexpected error occurred while processing the redirect.",
+				statusCode: StatusCodes.Status500InternalServerError,
+				title: "Internal Server Error");
+		}
+	}
+
+	public static async Task<IResult> DeleteUrlAsync(
+        Guid id,
+        bool? hardDelete,
+        IUrlRepository repository,
+        ILogger<UrlEndpoints> logger,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            if(id == Guid.Empty)
+			{
+				return Results.ValidationProblem(
+						new Dictionary<string, string[]> { { "Request", new[] { $"Invalid id {id}." } } },
+						title: "Validation Error",
+						statusCode: StatusCodes.Status400BadRequest);
+			}
+            bool isDeleted = await repository.DeleteUrlAsync(id, hardDelete ?? false, cancellationToken);
+            return Results.Ok(isDeleted);
+        }
+        catch (OperationCanceledException)
+        {
+            return Results.StatusCode(StatusCodes.Status499ClientClosedRequest);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An unhandled exception occurred while executing {MethodName}", nameof(DeleteUrlAsync));
+            return Results.Problem(
                 detail: "An unexpected error occurred while fetching details.",
                 statusCode: StatusCodes.Status500InternalServerError,
                 title: "Internal Server Error");

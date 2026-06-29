@@ -39,5 +39,24 @@ namespace UrlShortener.Infrastructure.Repositories
 			item.ClickCount++;
 			await _db.SaveChangesAsync(cancellationToken);
 		}
+
+		public async Task<bool> DeleteUrlAsync(Guid id, bool hardDelete = false, CancellationToken cancellationToken = default)
+		{
+			bool isDeleted = false;
+			var item = await _db.ShortenedUrls.FirstOrDefaultAsync(x => x.IsActive && x.Id == id, cancellationToken);
+			if (item is not null)
+			{
+				if (hardDelete)
+				{
+					_db.ShortenedUrls.Remove(item);
+				}
+				else
+				{
+					item.IsActive = false;
+				}
+				isDeleted = await _db.SaveChangesAsync(cancellationToken) > 0;
+			}
+			return isDeleted;
+		}
 	}
 }

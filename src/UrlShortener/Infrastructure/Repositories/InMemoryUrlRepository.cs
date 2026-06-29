@@ -50,4 +50,14 @@ public class InMemoryUrlRepository : IUrlRepository
         }
         return Task.CompletedTask;
     }
+
+	public Task<bool> DeleteUrlAsync(Guid id, bool hardDelete = false, CancellationToken cancellationToken = default)
+	{
+        var item = _urls.FirstOrDefault(x => x.Value.Id == id);
+        if (item.Key is not null)
+        {
+			return Task.FromResult(_urls.TryRemove(item.Key, out _));
+        }
+        return Task.FromResult(false);
+	}
 }
