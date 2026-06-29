@@ -17,6 +17,7 @@ var tokenLimit = builder.Configuration.GetValue<int>("TokenLimit");
 var tokensPerPeriod = builder.Configuration.GetValue<int>("TokensPerPeriod");
 var retryAfter = builder.Configuration["RetryAfter"];
 var maxRequestBodySize = builder.Configuration.GetValue<int>("MaxRequestBodySize");
+maxRequestBodySize = maxRequestBodySize == 0 ? 3 : maxRequestBodySize;
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddSingleton<IShortCodeService, ShortCodeService>();
@@ -54,10 +55,10 @@ builder.Services.AddRateLimiter(options =>
 });
 
 // set request size at Kestrel level 
-//builder.WebHost.ConfigureKestrel(options =>
-//{
-//	options.Limits.MaxRequestBodySize = (maxRequestBodySize * 2) * 1024 * 1024;
-//});
+builder.WebHost.ConfigureKestrel(options =>
+{
+	options.Limits.MaxRequestBodySize = maxRequestBodySize * 1024 * 1024;
+});
 
 builder.Services.AddHealthChecks();
 var app = builder.Build();
