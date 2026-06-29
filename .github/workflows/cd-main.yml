@@ -63,7 +63,7 @@ jobs:
         shell: pwsh
         run: |
           try {
-            $response = Invoke-WebRequest -Uri "https://nikhilapi.runasp.net/Admin" -UseBasicParsing
+            $response = Invoke-WebRequest -Uri "https://nikhilapi.runasp.net/api/Admin" -UseBasicParsing
             if ($response.StatusCode -eq 200) {
               Write-Host "Health check passed! App is alive. Hurray!"
             } else {
