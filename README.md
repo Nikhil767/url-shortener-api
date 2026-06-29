@@ -120,7 +120,7 @@ After saving → **Recycle Application Pool**.
 Request:
 ```json
 {
-  "longUrl": "https://example.com"
+  "url": "https://example.com"
 }
 ```
 
@@ -135,20 +135,23 @@ Response:
 ---
 
 ### 🔹 Redirect to Original URL  
-**GET** `/{shortCode}`  
+**GET** `/api/{code}`  
 Redirects to the long URL.
 
 ---
 
 ### 🔹 Get URL Details  
-**GET** `/api/shorten/{shortCode}`
+**GET** `/api/shorten/{code}`
 
 Response:
 ```json
 {
-  "longUrl": "https://example.com",
-  "createdAt": "2026-06-15T10:00:00Z",
-  "clicks": 42
+  "id": "ed10ddbc-196a-44e1-8854-0876ee858a56",
+  "originalUrl": "https://anthropic.skilljar.com/",
+  "shortCode": "woug9X",
+  "createdAt": "2026-06-29T18:58:32.5501201",
+  "clickCount": 0,
+  "isActive": true
 }
 ```
 

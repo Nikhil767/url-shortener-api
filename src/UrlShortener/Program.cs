@@ -54,10 +54,10 @@ builder.Services.AddRateLimiter(options =>
 });
 
 // set request size at Kestrel level 
-builder.WebHost.ConfigureKestrel(options =>
-{
-	options.Limits.MaxRequestBodySize = maxRequestBodySize * 1024 * 1024;
-});
+//builder.WebHost.ConfigureKestrel(options =>
+//{
+//	options.Limits.MaxRequestBodySize = (maxRequestBodySize * 2) * 1024 * 1024;
+//});
 
 builder.Services.AddHealthChecks();
 var app = builder.Build();

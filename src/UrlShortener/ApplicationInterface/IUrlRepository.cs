@@ -14,4 +14,5 @@ public interface IUrlRepository
 	/// <returns></returns>
 	Task<IEnumerable<ShortenedUrl>> GetAllAsync(CancellationToken cancellationToken = default);
     Task IncrementClickCountAsync(string code, CancellationToken cancellationToken = default);
+	Task<bool> DeleteUrlAsync(Guid id, bool hardDelete = false, CancellationToken cancellationToken = default);
 }

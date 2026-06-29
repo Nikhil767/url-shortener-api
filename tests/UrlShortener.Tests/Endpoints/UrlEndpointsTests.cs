@@ -135,7 +135,7 @@ public class UrlEndpointsTests
         // Assert
         var okResult = Assert.IsAssignableFrom<Ok<ShortenUrlResponse>>(result);
         Assert.NotNull(okResult.Value);
-        Assert.Equal("git123", okResult.Value.Code);
+        Assert.Equal("git123", okResult.Value.ShortCode);
         Assert.Equal("https://custom.lnk/git123", okResult.Value.ShortUrl);
         _mockRepository.Verify(r => r.AddAsync(It.Is<ShortenedUrl>(u => u.OriginalUrl == request.Url && u.ShortCode == "git123"), _cancellationToken), Times.Once);
     }
@@ -161,7 +161,7 @@ public class UrlEndpointsTests
         // Assert
         var okResult = Assert.IsAssignableFrom<Ok<ShortenUrlResponse>>(result);
         Assert.NotNull(okResult.Value);
-        Assert.Equal("git123", okResult.Value.Code);
+        Assert.Equal("git123", okResult.Value.ShortCode);
         Assert.Equal("https://custom.lnk/git123", okResult.Value.ShortUrl);
         
         // Ensure no new code is generated and no new entity is added
@@ -202,7 +202,7 @@ public class UrlEndpointsTests
         // Assert
         var okResult = Assert.IsAssignableFrom<Ok<ShortenUrlResponse>>(result);
         Assert.NotNull(okResult.Value);
-        Assert.Equal("uniq12", okResult.Value.Code);
+        Assert.Equal("uniq12", okResult.Value.ShortCode);
         _mockRepository.Verify(r => r.GetByCodeAsync(It.IsAny<string>(), _cancellationToken), Times.Exactly(2));
     }
 
