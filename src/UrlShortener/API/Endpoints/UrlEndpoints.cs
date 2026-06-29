@@ -80,6 +80,9 @@ public class UrlEndpoints
                     ? request.BaseUrl.TrimEnd('/')
                     : $"{httpContext.Request.Scheme}://{httpContext.Request.Host}";
 
+                if (!existingHostUrl.EndsWith("/api"))
+                    existingHostUrl += "/api";
+
                 var existingResponse = new ShortenUrlResponse
                 {
                     ShortCode = existingUrl.ShortCode,
@@ -119,7 +122,9 @@ public class UrlEndpoints
             var hostUrl = !string.IsNullOrWhiteSpace(request.BaseUrl)
                 ? request.BaseUrl.TrimEnd('/')
                 : $"{httpContext.Request.Scheme}://{httpContext.Request.Host}";
-            var response = new ShortenUrlResponse
+			if (!hostUrl.EndsWith("/api"))
+				hostUrl += "/api";
+			var response = new ShortenUrlResponse
             {
                 ShortCode = code,
                 ShortUrl = $"{hostUrl}/{code}"
