@@ -8,8 +8,20 @@ This API converts long URLs into short codes, handles redirection, tracks usage,
 ![Status](https://img.shields.io/badge/status-live-success)
 ![Tech](https://img.shields.io/badge/.NET-10.0-purple)
 ![CI - Dev](https://github.com/Nikhil767/url-shortener-api/actions/workflows/ci-dev.yml/badge.svg)
-![CD - Main](https://github.com/Nikhil767/url-shortener-api/actions/workflows/cd-main-webdeploy.yml/badge.svg)
+![CD - Main](https://github.com/Nikhil767/url-shortener-api/actions/workflows/cd-main.yml/badge.svg)
+---
+## 🚀 Live Demo
 
+Experience the application live:
+
+👉 **[Live Demo](https://url-shortner.learningmonster76.workers.dev)**
+
+This hosted version includes the complete UI for:
+- URL shortening  
+- Viewing detailed information for any short code  
+- Redirect preview  
+- Click counts  
+Use the live demo to explore the full workflow without running the project locally.
 ---
 
 ## 🚀 Overview
@@ -24,7 +36,6 @@ This project provides a lightweight and efficient URL shortening API that:
 - Uses User Secrets (local) + Environment Variables (production)  
 
 Perfect for learning, portfolio projects, or integrating into real-world applications.
-
 ---
 
 ## 📁 Folder Structure
